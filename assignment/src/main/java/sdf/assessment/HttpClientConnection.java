@@ -1,36 +1,43 @@
 package sdf.assessment;
 
-import java.io.IOException;
+import java.io.File;
 import java.net.Socket;
-import java.util.Scanner;
+
 
 public class HttpClientConnection {
 
+    static final File WEB_ROOT = new File(".");
+    static final String DEFAULT_FILE = "index.html";
+    
+    private Socket socket;
+    private Main clientConnect;
 
-    public static void main(String[] args) throws IOException {
-        
-        Scanner sc = new Scanner(System.in);
+    public void Server(Socket socket){
+        this.socket = socket;
+    }    
 
-        Socket socket = new Socket("localhost", 3000);
-
-        try {
-            System.out.println("Connected with server at port 3000");
-            
-        
-        } catch (Exception e) {
-            System.out.println("unable to connect");
-            e.printStackTrace();
-        
-        } finally {
-            try {
-                if (socket != null)
-                    socket.close();
-                sc.close();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    private String getContentType(String fileRequest){
+        if (fileRequest.endsWith(".htm") || fileRequest.endsWith(".html"))
+            return "text/html";
+        else 
+            return "text/plain";
 
     }
+
+    private void fileNotFound(String fileRequest){
+        String title = "HTTP/1.1 404 Not Found";
+        String errorMsg = fileRequest + " not found";
+        clientConnect.printError(title,errorMsg);
+        System.out.println("File " + fileRequest + "not supported");
+    }
+
+    private void methodNotAllowed(String method){
+        String title = "HTTP/1.1 405 Method Not Allowed";
+        String errorMsg = method + " not supported";
+        clientConnect.printError(title,errorMsg);
+        System.out.println(method + "not supported");
+    }
+
+    
+    
 }
